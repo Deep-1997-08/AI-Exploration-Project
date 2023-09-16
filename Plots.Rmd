@@ -1,0 +1,181 @@
+---
+title: "520-Project 3 Bayesian Inference for Hunitng"
+author: "Janish Parikh"
+date: "10/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r cars}
+library(ggplot2)
+library(reshape)
+```
+
+# Load Data
+```{r}
+data <- read.csv("~/Desktop/520-Intro to AI/Project3/Repeated_Forward_Astar/cmp_data_5.csv", header=FALSE)
+colnames(data)<-c("Sample","dim","agent","terrain","move","exam","total")
+head(data)
+```
+
+# Defining Theme for better Plots
+```{r}
+mynamestheme <- theme(plot.title = element_text(family = "Courier", face = "bold", size = (12)), 
+legend.title = element_text(colour = "Black",  face = "bold.italic", family = "Helvetica"), 
+legend.text = element_text(face = "italic", colour="steelblue4",family = "Helvetica"), 
+axis.title = element_text(family = "Helvetica",face = "bold.italic", size = (10), colour = "Black"),
+axis.text = element_text(family = "Courier", colour = "cornflowerblue", size = (10)))
+```
+
+# Plot of Total Action Cost V/S Dimension of Gridworld
+```{r}
+test1 <- data[,c("agent","dim","total")]
+v1<-aggregate(test1[test1$agent==6,]$total,list(test1[test1$agent==6,]$dim), mean)
+v2<-aggregate(test1[test1$agent==7,]$total,list(test1[test1$agent==7,]$dim), mean)
+v3<-aggregate(test1[test1$agent==8,]$total,list(test1[test1$agent==8,]$dim), mean)
+
+colnames(v1)<-c("Gridworld_Dimension","Agent 6")
+colnames(v2)<-c("Gridworld_Dimension","Agent 7")
+colnames(v3)<-c("Gridworld_Dimension","Agent 8")
+
+MergedDF <- merge(v1, v2, by="Gridworld_Dimension")
+MergedDF <- merge(MergedDF, v3, by="Gridworld_Dimension")
+
+Molten <- melt(MergedDF, id.vars = "Gridworld_Dimension")
+gp1 <- ggplot(Molten, aes(x = Gridworld_Dimension, y = value, colour = variable)) +
+ geom_point()+ 
+ geom_line(aes(y = value, x =Gridworld_Dimension ))+
+ scale_color_discrete("Agent Type")+
+ theme_minimal()+
+ theme(legend.position="top")
+
+print(gp1 + mynamestheme + labs( y="Average Total Cost (Movement + Examination)", x = "Gridworld Dimension"))
+```
+
+# Plot for Average Movement Cost V/S Dimension of Gridworld
+```{r}
+test1 <- data[,c("agent","dim","move")]
+v1<-aggregate(test1[test1$agent==6,]$move,list(test1[test1$agent==6,]$dim), mean)
+v2<-aggregate(test1[test1$agent==7,]$move,list(test1[test1$agent==7,]$dim), mean)
+v3<-aggregate(test1[test1$agent==8,]$move,list(test1[test1$agent==8,]$dim), mean)
+
+colnames(v1)<-c("Gridworld_Dimension","Agent 6")
+colnames(v2)<-c("Gridworld_Dimension","Agent 7")
+colnames(v3)<-c("Gridworld_Dimension","Agent 8")
+
+MergedDF <- merge(v1, v2, by="Gridworld_Dimension")
+MergedDF <- merge(MergedDF, v3, by="Gridworld_Dimension")
+
+Molten <- melt(MergedDF, id.vars = "Gridworld_Dimension")
+gp1 <- ggplot(Molten, aes(x = Gridworld_Dimension, y = value, colour = variable)) +
+ geom_point()+ 
+ geom_line(aes(y = value, x =Gridworld_Dimension ))+
+ scale_color_discrete("Agent Type")+
+ theme_minimal()+
+ theme(legend.position="top")
+
+print(gp1 + mynamestheme + labs( y="Average Movement Cost", x = "Gridworld Dimension"))
+```
+
+# Plot for Average Examination Cost V/S Dimension of Gridworld
+```{r}
+test1 <- data[,c("agent","dim","exam")]
+v1<-aggregate(test1[test1$agent==6,]$exam,list(test1[test1$agent==6,]$dim), mean)
+v2<-aggregate(test1[test1$agent==7,]$exam,list(test1[test1$agent==7,]$dim), mean)
+v3<-aggregate(test1[test1$agent==8,]$exam,list(test1[test1$agent==8,]$dim), mean)
+
+colnames(v1)<-c("Gridworld_Dimension","Agent 6")
+colnames(v2)<-c("Gridworld_Dimension","Agent 7")
+colnames(v3)<-c("Gridworld_Dimension","Agent 8")
+
+MergedDF <- merge(v1, v2, by="Gridworld_Dimension")
+MergedDF <- merge(MergedDF, v3, by="Gridworld_Dimension")
+
+Molten <- melt(MergedDF, id.vars = "Gridworld_Dimension")
+gp1 <- ggplot(Molten, aes(x = Gridworld_Dimension, y = value, colour = variable)) +
+ geom_point()+ 
+ geom_line(aes(y = value, x =Gridworld_Dimension ))+
+ scale_color_discrete("Agent Type")+
+ theme_minimal()+
+ theme(legend.position="top")
+
+print(gp1 + mynamestheme + labs( y="Average Examination Cost", x = "Gridworld Dimension"))
+```
+
+# Looking where target hidden in Flat Terrain Type. 
+```{r}
+test1 <- data[data$terrain==2,c("agent","dim","total")]
+v1<-aggregate(test1[test1$agent==6,]$total,list(test1[test1$agent==6,]$dim), mean)
+v2<-aggregate(test1[test1$agent==7,]$total,list(test1[test1$agent==7,]$dim), mean)
+v3<-aggregate(test1[test1$agent==8,]$total,list(test1[test1$agent==8,]$dim), mean)
+
+colnames(v1)<-c("Gridworld_Dimension","Agent 6")
+colnames(v2)<-c("Gridworld_Dimension","Agent 7")
+colnames(v3)<-c("Gridworld_Dimension","Agent 8")
+
+MergedDF <- merge(v1, v2, by="Gridworld_Dimension")
+MergedDF <- merge(MergedDF, v3, by="Gridworld_Dimension")
+
+Molten <- melt(MergedDF, id.vars = "Gridworld_Dimension")
+gp1 <- ggplot(Molten, aes(x = Gridworld_Dimension, y = value, colour = variable)) +
+ geom_point()+ 
+ geom_line(aes(y = value, x =Gridworld_Dimension ))+
+ scale_color_discrete("Agent Type")+
+ theme_minimal()+
+ theme(legend.position="top")
+
+print(gp1 + mynamestheme + labs( y="Average Total Cost (Movement + Examination)", x = "Gridworld Dimension"))
+```
+
+# Looking where target hidden in Hilly Terrain Type. 
+```{r}
+test1 <- data[data$terrain==5,c("agent","dim","total")]
+v1<-aggregate(test1[test1$agent==6,]$total,list(test1[test1$agent==6,]$dim), mean)
+v2<-aggregate(test1[test1$agent==7,]$total,list(test1[test1$agent==7,]$dim), mean)
+v3<-aggregate(test1[test1$agent==8,]$total,list(test1[test1$agent==8,]$dim), mean)
+
+colnames(v1)<-c("Gridworld_Dimension","Agent 6")
+colnames(v2)<-c("Gridworld_Dimension","Agent 7")
+colnames(v3)<-c("Gridworld_Dimension","Agent 8")
+
+MergedDF <- merge(v1, v2, by="Gridworld_Dimension")
+MergedDF <- merge(MergedDF, v3, by="Gridworld_Dimension")
+
+Molten <- melt(MergedDF, id.vars = "Gridworld_Dimension")
+gp1 <- ggplot(Molten, aes(x = Gridworld_Dimension, y = value, colour = variable)) +
+ geom_point()+ 
+ geom_line(aes(y = value, x =Gridworld_Dimension ))+
+ scale_color_discrete("Agent Type")+
+ theme_minimal()+
+ theme(legend.position="top")
+
+print(gp1 + mynamestheme + labs( y="Average Total Cost (Movement + Examination)", x = "Gridworld Dimension"))
+```
+
+# Looking where target hidden in Forest Terrain Type. 
+```{r}
+test1 <- data[data$terrain==8,c("agent","dim","total")]
+v1<-aggregate(test1[test1$agent==6,]$total,list(test1[test1$agent==6,]$dim), mean)
+v2<-aggregate(test1[test1$agent==7,]$total,list(test1[test1$agent==7,]$dim), mean)
+v3<-aggregate(test1[test1$agent==8,]$total,list(test1[test1$agent==8,]$dim), mean)
+
+colnames(v1)<-c("Gridworld_Dimension","Agent 6")
+colnames(v2)<-c("Gridworld_Dimension","Agent 7")
+colnames(v3)<-c("Gridworld_Dimension","Agent 8")
+
+MergedDF <- merge(v1, v2, by="Gridworld_Dimension")
+MergedDF <- merge(MergedDF, v3, by="Gridworld_Dimension")
+
+Molten <- melt(MergedDF, id.vars = "Gridworld_Dimension")
+gp1 <- ggplot(Molten, aes(x = Gridworld_Dimension, y = value, colour = variable)) +
+ geom_point()+ 
+ geom_line(aes(y = value, x =Gridworld_Dimension ))+
+ scale_color_discrete("Agent Type")+
+ theme_minimal()+
+ theme(legend.position="top")
+
+print(gp1 + mynamestheme + labs( y="Average Total Cost (Movement + Examination)", x = "Gridworld Dimension"))
+```
